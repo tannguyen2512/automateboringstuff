@@ -5,22 +5,29 @@ import sys
 import bs4
 import webbrowser
 
-print('Searching...')
 domain = 'https://google.com/'
-searchEngine = domain + 'search?q='
-searchURL = searchEngine + ' '.join(sys.argv[1:])
-print(searchURL)
-myRequest = requests.get(searchURL)
+maxTabOpened = 5
+
+def requestSearchEngine(argv) :
+    searchUrl = domain + 'search?q=' + ' '.join(argv[1:])
+    myRequest = requests.get(searchUrl)
+    return myRequest
+
+
+def parseRequest(someRequest) :
+    parsedHTML = bs4.BeautifulSoup(myRequest.content, 'html.parser')
+    listResultUrl = parsedHTML.select('.kCrYT > a')
+    return listResultUrl
+
+def openResultUrl(someListResult) :
+    for i in range(min(maxTabOpened, len(someListResult))):
+        urlToOpen = domain + someListResult[i].get('href')
+        print('Opening ', urlToOpen)
+        webbrowser.open(urlToOpen)
+
+
+print('Searching...')
+myRequest = requestSearchEngine(sys.argv)
 myRequest.raise_for_status()
-
-# Retrieve top search result links.
-# parsedHTML = bs4.BeautifulSoup(myRequest.text, 'html.parser')
-parsedHTML = bs4.BeautifulSoup(myRequest.content, 'html.parser')
-linkSearchResults = parsedHTML.select('.kCrYT > a')
-
-# Open a browser tab for each result.
-tabLimit = min(8, len(linkSearchResults))
-for i in range(tabLimit):
-    urlToOpen = domain + linkSearchResults[i].get('href')
-    print('Opening ', urlToOpen)
-    webbrowser.open(urlToOpen)
+listResult = parseRequest(myRequest)
+openResultUrl(listResult)
