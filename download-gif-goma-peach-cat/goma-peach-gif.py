@@ -15,7 +15,8 @@ stickerIDsDict = {
     'peach-cat-8' : 12453793,
     'peach-cat-9' : 13027817,
     'peach-cat-10' : 13560596,
-    'peach-cat-11' : 13992900
+    'peach-cat-11' : 13992900,
+    'peach-cat-12' : 14735053
 }
 
 # create a result folder
